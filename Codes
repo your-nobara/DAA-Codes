@@ -1,0 +1,335 @@
+PRACTICAL NO : 01
+Write a program non-recursive and recursive program to calculate Fibonacci numbers and 
+analyze their time and space complexity. 
+CODE : 
+#include <iostream> 
+using namespace std; 
+int fibonacci(int n) 
+{ 
+    if (n <= 1) 
+    { 
+        return n; 
+    } 
+    return fibonacci(n - 1) + fibonacci(n - 2); 
+}  
+int main() 
+{ 
+    int i, n, f0 = 0, f1 = 1, next; 
+    cout << "Fibonacci Series in C++ Without Using Recursion"; 
+    cout << "\nEnter any number: "; 
+    cin >> n; 
+    for (i = 0; i < n; i++) 
+    { 
+        cout << f0 << " "; 
+        next = f0 + f1; 
+        f0 = f1; 
+        f1 = next; 
+    } 
+    cout << "\n\nFibonacci Series in C++ Using Recursion"; 
+    cout << "\nEnter any number: "; 
+    cin >> n; 
+    for (i = 0; i < n; i++) 
+    { 
+        cout << fibonacci(i) << " "; 
+    } 
+    return 0; 
+}
+OUTPUT : 
+Fibonacci Series in C++ Without Using Recursion 
+Enter any number: 18 
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597  
+ 
+Fibonacci Series in C++ Using Recursion 
+Enter any number: 18 
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597
+
+*************************************************************************************************************************************************************************
+
+PRACTICAL NO : 02 
+Write a program to implement Huffman Encoding using a greedy strategy. 
+CODE :
+
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+struct Node
+{
+    char ch;
+    int freq;
+    int order;
+    Node *left, *right;
+
+    Node(char c, int f, int o)
+    {
+        ch = c;
+        freq = f;
+        order = o;
+        left = right = NULL;
+    }
+};
+
+struct Compare
+{
+    bool operator()(Node* a, Node* b)
+    {
+        if (a->freq == b->freq)
+            return a->order > b->order;
+
+        return a->freq > b->freq;
+    }
+};
+
+void printCodes(Node* root, string code)
+{
+    if (root == NULL)
+        return;
+
+    if (root->left == NULL && root->right == NULL)
+    {
+        if (code == "")
+            code = "0";
+
+        cout << root->ch << ": " << code << endl;
+        return;
+    }
+
+    printCodes(root->left, code + "0");
+    printCodes(root->right, code + "1");
+}
+
+int main()
+{
+    priority_queue<Node*, vector<Node*>, Compare> pq;
+
+    int n, freq, order = 0;
+    char ch;
+
+    cout << "Enter number of characters: ";
+    cin >> n;
+
+    if (n <= 0)
+        return 0;
+
+    cout << "Enter character and frequency:\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        cin >> ch >> freq;
+        pq.push(new Node(ch, freq, order++));
+    }
+
+    while (pq.size() > 1)
+    {
+        Node* left = pq.top();
+        pq.pop();
+
+        Node* right = pq.top();
+        pq.pop();
+
+        Node* parent = new Node(
+            '$',
+            left->freq + right->freq,
+            order++
+        );
+
+        parent->left = left;
+        parent->right = right;
+
+        pq.push(parent);
+    }
+
+    cout << "\nHuffman Codes:\n";
+    printCodes(pq.top(), "");
+
+    return 0;
+}
+OUTPUT:
+Enter number of characters: 6
+Enter character and frequency:
+a 1
+b 1
+c 2
+d 2
+e 3
+f 6
+
+Huffman Codes:
+f: 0
+c: 100
+d: 101
+a: 1100
+b: 1101
+e: 111
+
+*************************************************************************************************************************************************************************
+
+PRACTICAL NO : 03 
+Write a program to solve a Fractional Knapsack problem using a greedy method. 
+CODE : 
+#include <iostream> 
+#include <algorithm> 
+using namespace std; 
+struct Item 
+{ 
+    int profit, weight; 
+    Item(int profit, int weight) 
+    { 
+        this->profit = profit; 
+        this->weight = weight; 
+    } 
+}; 
+static bool cmp(Item a, Item b) 
+{ 
+    double r1 = (double)a.profit / (double)a.weight; 
+    double r2 = (double)b.profit / (double)b.weight; 
+    return r1 > r2; 
+} 
+double fractionalKnapsack(int W, Item arr[], int N) 
+{ 
+    sort(arr, arr + N, cmp); 
+    double finalvalue = 0.0; 
+    for (int i = 0; i < N; i++) 
+    { 
+        if (arr[i].weight <= W) 
+        { 
+            W -= arr[i].weight; 
+            finalvalue += arr[i].profit; 
+        } 
+        else 
+        { 
+            finalvalue += arr[i].profit * 
+                          ((double)W / (double)arr[i].weight); 
+            break; 
+        } 
+    } 
+    return finalvalue; 
+} 
+int main() 
+{ 
+    int W = 20; 
+    Item arr[] = { 
+        {20, 30}, 
+        {10, 30}, 
+        {10, 10} 
+    }; 
+    int N = sizeof(arr) / sizeof(arr[0]); 
+    cout << fractionalKnapsack(W, arr, N); 
+    return 0; 
+} 
+OUTPUT : 
+16.6667
+
+*************************************************************************************************************************************************************************
+PRACTICAL NO : 04 
+Write a program to solve a 0-1 Knapsack problem using dynamic programming or branch and 
+bound strategy. 
+CODE : 
+#include <bits/stdc++.h> 
+using namespace std; 
+int max(int a, int b) 
+{ 
+    return (a > b) ? a : b; 
+} 
+int knapSack(int W, int wt[], int val[], int n) 
+{ 
+    if (n == 0 || W == 0) 
+        return 0; 
+    if (wt[n - 1] > W) 
+        return knapSack(W, wt, val, n - 1); 
+    else 
+        return max( 
+            val[n - 1] + 
+            knapSack(W - wt[n - 1], wt, val, n - 1), 
+            knapSack(W, wt, val, n - 1) 
+        ); 
+} 
+int main() 
+{ 
+    int profit[] = {60, 100, 120}; 
+    int weight[] = {10, 20, 30}; 
+    int W = 50; 
+    int n = sizeof(profit) / sizeof(profit[0]); 
+    cout << knapSack(W, weight, profit, n); 
+    return 0; 
+} 
+OUTPUT : 
+220
+
+*************************************************************************************************************************************************************************
+
+PRACTICAL NO : 05 
+Design n-Queens matrix having first Queen placed. Use backtracking to place remaining Queens 
+to generate the final n-queen’s matrix. 
+CODE : 
+#include <bits/stdc++.h>
+using namespace std;
+#define N 4
+void printSolution(int board[N][N])
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+bool isSafe(int board[N][N], int row, int col)
+{
+    int i, j;
+    for (i = 0; i < col; i++)
+        if (board[row][i])
+            return false;
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        if (board[i][j])
+            return false;
+    for (i = row, j = col; j >= 0 && i < N; i++, j--)
+        if (board[i][j])
+            return false;
+    return true;
+}
+bool solveNQUtil(int board[N][N], int col)
+{
+    if (col >= N)
+        return true;
+    for (int i = 0; i < N; i++)
+    {
+        if (isSafe(board, i, col))
+        {
+            board[i][col] = 1;
+            if (solveNQUtil(board, col + 1))
+                return true;
+            board[i][col] = 0;
+        }
+    }
+    return false;
+}
+bool solveNQ()
+{
+    int board[N][N] = {0};
+    // Place first Queen at row 1, column 0
+    board[1][0] = 1;
+    // Place remaining Queens using backtracking
+    if (!solveNQUtil(board, 1))
+    {
+        cout << "Solution does not exist";
+        return false;
+    }
+    cout << "N-Queens Solution:\n";
+    printSolution(board);
+    return true;
+}
+int main()
+{
+    solveNQ();
+    return 0;
+}
+OUTPUT
+N-Queens Solution:
+0 0 1 0 
+1 0 0 0 
+0 0 0 1 
+0 1 0 0 
